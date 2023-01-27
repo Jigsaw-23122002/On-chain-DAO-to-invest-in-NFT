@@ -257,14 +257,13 @@ export default function Home() {
           Loading... Waiting for transaction...
         </div>
       );
-    } //else if (proposals.length === 0) {
-    //   return (
-    //     <div className={styles.description}>
-    //       No proposals have been created.
-    //     </div>
-    //   );
-    // } 
-    else {
+    } else if (proposals.length === 0) {
+      return (
+        <div className={styles.description}>
+          No proposals have been created.
+        </div>
+      );
+    } else {
       return (
         <div>
           {proposals.map((p, index) => {
