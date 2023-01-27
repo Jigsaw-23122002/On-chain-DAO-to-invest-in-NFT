@@ -237,7 +237,7 @@ export default function Home() {
   const executeProposal = async (proposalId) => {
     try {
       const signer = await getProviderOrSigner(true);
-      const contract = await getCryptodevsNFTContractInstance(signer);
+      const contract = await getDaoContractInstance(signer);
       const txn = await contract.executeProposal(proposalId);
       setLoading(true);
       await txn.wait();
