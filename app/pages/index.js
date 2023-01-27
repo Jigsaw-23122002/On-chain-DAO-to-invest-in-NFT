@@ -50,8 +50,8 @@ export default function Home() {
   const getNumOfProposalsInDAO = async () => {
     try {
       const provider = await getProviderOrSigner();
-      const contract = getDaoContractInstance(provider);
-      const daoNumProposals = await contract.numProposals();
+      const contract = await getDaoContractInstance(provider);
+      const daoNumProposals = await contract.getNumProposals();
       setNumProposals(daoNumProposals.toString());
     } catch (error) {
       console.error(error);
@@ -69,7 +69,7 @@ export default function Home() {
   const getUserNFTBalance = async () => {
     try {
       const signer = await getProviderOrSigner(true);
-      const nftContract = getCryptodevsNFTContractInstance(signer);
+      const nftContract = await getCryptodevsNFTContractInstance(signer);
       const balance = await nftContract.balanceOf(signer.getAddress());
       setNftBalance(parseInt(balance.toString()));
     } catch (error) {
@@ -318,7 +318,21 @@ export default function Home() {
       return renderViewProposalTab();
     }
   }
-  const withdrawDAOEther = async () => {};
+  const withdrawDAOEther = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const contract = getDaoContractInstance(signer);
+
+      const tx = await contract.withdrawEther();
+      setLoading(true);
+      await tx.wait();
+      setLoading(false);
+      getDAOTreasuryBalance();
+    } catch (err) {
+      console.error(err);
+      window.alert(err.reason);
+    }
+  };
 
   return (
     <div>

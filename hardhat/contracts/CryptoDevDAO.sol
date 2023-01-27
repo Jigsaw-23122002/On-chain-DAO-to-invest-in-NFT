@@ -104,6 +104,10 @@ contract CryptoDevDAO is Ownable {
         proposal.executed = true;
     }
 
+    function getNumProposals() public view returns (uint256) {
+        return numProposals;
+    }
+
     function withdrawEther() external onlyOwner {
         uint256 amount = address(this).balance;
         require(amount > 0, "Nothing to withdraw; contract balance empty");

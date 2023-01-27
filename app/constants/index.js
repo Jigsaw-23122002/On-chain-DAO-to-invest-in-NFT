@@ -1,5 +1,5 @@
 export const CRYPTODEV_DAO_CONTRACT_ADDRESS =
-  "0x48A8991813181c82640A37506267c87bea9F2A7C";
+  "0x5ddEdb18ACC23d58bbe5b973e8DC5E2E38C1e3fD";
 export const CRYPTODEV_NFT_CONTRACT_ADDRESS =
   "0xA2760778BB8183f80Eff769bC1F9162376c3E7c1";
 
@@ -73,6 +73,19 @@ export const CRYPTODEV_DAO_ABI = [
     name: "executeProposal",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getNumProposals",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
