@@ -159,7 +159,7 @@ export default function Home() {
         const proposal = await fetchProposalById(i);
         proposals.push(proposal);
       }
-      setProposals[proposals];
+      setProposals(proposals);
     } catch (error) {
       console.error(error);
     }
@@ -221,7 +221,7 @@ export default function Home() {
   const voteOnProposal = async (proposalId, _vote) => {
     try {
       const signer = await getProviderOrSigner(true);
-      const contract = await getCryptodevsNFTContractInstance(signer);
+      const contract = await getDaoContractInstance(signer);
       const vote = _vote === "YAY" ? 0 : 1;
       const txn = await contract.voteOnProposal(proposalId, vote);
       setLoading(true);
@@ -257,13 +257,14 @@ export default function Home() {
           Loading... Waiting for transaction...
         </div>
       );
-    } else if (proposals.length === 0) {
-      return (
-        <div className={styles.description}>
-          No proposals have been created.
-        </div>
-      );
-    } else {
+    } //else if (proposals.length === 0) {
+    //   return (
+    //     <div className={styles.description}>
+    //       No proposals have been created.
+    //     </div>
+    //   );
+    // } 
+    else {
       return (
         <div>
           {proposals.map((p, index) => {
