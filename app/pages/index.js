@@ -177,7 +177,7 @@ export default function Home() {
       const contract = await getDaoContractInstance(signer);
       const txn = await contract.createProposal(fakeNftTokenId);
       setLoading(true);
-      txn.wait();
+      await txn.wait();
       await getNumOfProposalsInDAO();
       setLoading(false);
     } catch (error) {
@@ -217,8 +217,98 @@ export default function Home() {
       );
     }
   }
+
+  const voteOnProposal = async (proposalId, _vote) => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const contract = await getCryptodevsNFTContractInstance(signer);
+      const vote = _vote === "YAY" ? 0 : 1;
+      const txn = await contract.voteOnProposal(proposalId, vote);
+      setLoading(true);
+      await txn.wait();
+      setLoading(false);
+      await fetchAllProposals();
+    } catch (error) {
+      console.error(error);
+      window.alert(error.reason);
+    }
+  };
+
+  const executeProposal = async (proposalId) => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const contract = await getCryptodevsNFTContractInstance(signer);
+      const txn = await contract.executeProposal(proposalId);
+      setLoading(true);
+      await txn.wait();
+      setLoading(false);
+      await fetchAllProposals();
+      getDAOTreasuryBalance();
+    } catch (error) {
+      console.error(error);
+      window.alert(error.reason);
+    }
+  };
+
   function renderViewProposalTab() {
-    return <div></div>;
+    if (loading) {
+      return (
+        <div className={styles.description}>
+          Loading... Waiting for transaction...
+        </div>
+      );
+    } else if (proposals.length === 0) {
+      return (
+        <div className={styles.description}>
+          No proposals have been created.
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          {proposals.map((p, index) => {
+            return (
+              <div key={index} className={styles.proposalCard}>
+                <p>Proposal ID: {p.proposalId}</p>
+                <p>Fake NFT to Purchase: {p.nftTokenId}</p>
+                <p>Deadline: {p.deadline.toLocaleString()}</p>
+                <p>Yay Votes: {p.yayVotes}</p>
+                <p>Nay Votes: {p.nayVotes}</p>
+                <p>Executed?: {p.executed.toString()}</p>
+                {p.deadline.getTime() > Date.now() && !p.executed ? (
+                  <div className={styles.flex}>
+                    <button
+                      className={styles.button2}
+                      onClick={() => voteOnProposal(p.proposalId, "YAY")}
+                    >
+                      Vote YAY
+                    </button>
+                    <button
+                      className={styles.button2}
+                      onClick={() => voteOnProposal(p.proposalId, "NAY")}
+                    >
+                      Vote NAY
+                    </button>
+                  </div>
+                ) : p.deadline.getTime() < Date.now() && !p.executed ? (
+                  <div className={styles.flex}>
+                    <button
+                      className={styles.button2}
+                      onClick={() => executeProposal(p.proposalId)}
+                    >
+                      Execute Proposal{" "}
+                      {p.yayVotes > p.nayVotes ? "(YAY)" : "(NAY)"}
+                    </button>
+                  </div>
+                ) : (
+                  <div className={styles.description}>Proposal Executed</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
   }
 
   function renderTabs() {
@@ -228,6 +318,7 @@ export default function Home() {
       return renderViewProposalTab();
     }
   }
+  const withdrawDAOEther = async () => {};
 
   return (
     <div>
@@ -262,8 +353,27 @@ export default function Home() {
             </button>
           </div>
           {renderTabs()}
+          {isOwner ? (
+            <div>
+              {loading ? (
+                <button className={styles.button}>Loading...</button>
+              ) : (
+                <button className={styles.button} onClick={withdrawDAOEther}>
+                  Withdraw DAO ETH
+                </button>
+              )}
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+        <div>
+          <img className={styles.image} src="/cryptodevs/0.svg" />
         </div>
       </div>
+      <footer className={styles.footer}>
+        Made with &#10084; by Crypto Devs
+      </footer>
     </div>
   );
 }
